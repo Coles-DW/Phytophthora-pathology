@@ -1,0 +1,74 @@
+https://www.protocols.io/view/reciprocal-best-hit-blast-q3rdym6?step=3
+
+Step 1: download sequences of choice from server/databases online:
+- The Arabidopsis hormone related genes were identified from papers and the peptide sequences were downloaded from phytozome.
+- The chcikpea genome was downloaded from  https://peanutbase.org/data/public/Cicer_arietinum/ICC4958.gnm2.ann1.LCVX/
+            cicar.ICC4958.gnm2.ann1.LCVX.protein.faa
+- The Arabidopsis genome was downloaded from TAIR
+            https://www.arabidopsis.org/download/index-auto.jsp?dir=%2Fdownload_files%2FSequences%2FTAIR10_blastsets
+            TAIR10_pep_20101214_updated
+
+Step 2: After downloading the sequences of choice, you need to create a database:
+
+Parameters
+in: FASTA file including all sequences for you database
+out: Database name
+dbtype: Database type usually 'prot' for proteins or 'nucleotide' for nucleotides
+
+- cd /data1/Reverseblast/BLAST
+- makeblastdb -in cicar.ICC4958.gnm2.ann1.LCVX.protein.faa -out chickpeapep2_db -dbtype prot -parse_seqids
+
+Step 3:  After downloading the sequences and creating the database you want to start with your first BLAST run:
+Parameters
+query: Input sequence
+db: BLAST database
+out: Name of the output file
+outfmt: Output format
+evalue: Arbitrary cut-off of sequence similarity. The e-value depends on your database size, so the large your database the smaller your e-value can be. I recommend something between 10-5 and 10-20.
+word_size: Number of nucleotides/amino acids, which resembles the smallest unit of your query
+num_alignments: Maximum number of alignment partner in the database for a single query sequence
+
+- blastp -query ./Queries\ for\ BLAST/Chickpea\ PR1\ queries.fasta -db ./arabidopsisprot_db -task blastp -outfmt 6 -max_target_seqs 5 -out ./Queries\ for\ BLAST/BLASTCAPR1 -evalue 10e-5 -num_threads 4
+- blastp -query ./Queries\ for\ BLAST/Arabidopsis\ hormone\ related\ peptides.faa -db ./chickpeapep2_db -task blastp -outfmt 6 -max_target_seqs 5 -out ./Queries\ for\ BLAST/BLASTACpep -evalue 10e-5 -num_threads 4
+- Result =  BLASTACpep.xlsx
+
+blastp -query TF_dsRNA_sequences.fasta  -db pmedpepdb -task blastp -outfmt 6 -max_target_seqs 5 -out blast_result -evalue 10e-5 -num_threads 4
+
+Step 4: After creating BLAST result, you need to do a reciprocol BLAST.  For this, you need to create FASTA files from your BLAST results.  You can find the code to run this analysis on GitLab FriPy group; code:  https://gitlab.com/fripy/bioinformatics/donnys_blast/-/blob/master/Untitled.ipynb. 
+
+Step 5:  Now that you have FASTA files for the hits you can start the second BLAST run and align the hits back to the original genome from the query sequence.  You need to create a database from the genomic sequences first and then start your BLAST run. This time you set the num_alignments parameter to 1, because you only want to record the best alignment partner in the genome. You don't have to worry about the evalue since the best hit will most likely be 0 or in close proximity.
+
+- cd /data1/chickpeablast/BLAST
+- makeblastdb -in TAIR10_pep_20101214_updated.fasta -out arabidopsisprot_db -dbtype prot -parse_seqids
+- blastp -query ./Queries\ for\ BLAST/Chickpea\ protein\ sequences\ for\ BLAST.faa -db ./arabidopsisprot_db -task blastp -outfmt 6 -max_target_seqs 5 -out ./Querieads 4
+- blastp -query ./Queries\ for\ BLAST/Chickpea\ protein\ sequences\ for\ BLAST.faa -db ./arabidopsisprot_db -task blastp -outfmt 6 -num_alignments 1 -out ./Queries\ for\ BLAST/BLASTCApep2 -num_threads 4
+- result = BLASTCApep2.csv
+
+In the last step, you need to filter those hits that aligned back to the original query sequence. These are the only valid hits following the standard procedure for a reciprocal best hit BLAST. You can find the code to run this analysis on Git:ab FriPy group; code: https://gitlab.com/fripy/bioinformatics/donnys_blast/-/blob/master/Problem2.ipynb. 
+
+- result = out.csv
+
+
+When doing a blast of Arabidopsis NPR1 (AT1G64280) to chickpea genome, the top two hits returned are NPR1 in chickpea. Get three annotated NPR1s in chickpea annotation when doing top 5 BLAST analysis from Arabidopsis NPR1 to chickpea; other two are NPR6 in chcikpea annotation. There are however, 4 annotated NPR1s in chickpea annotation. For PR1, blast of Arabidopsis PR1 led to top 5 hits all being annotated in chickpea as PR1. There are 5 annotated in chickpea genome as PR-1. Doing a RBBH analysis with say PR1, I lose PR1 when blasting chickpea PR1 back to Arabidopsis. This suggests that RBBH won’t work for this analysis and suggests that chickpea and Arabidopsis are evolutionarily different lacking true orthologs. Therefore, go based on the chickpea annotation. Sometimes genes such as EDS1 are not present in the chickpea annotation but can be found when doing a RBBH with Arabidopsis EDS1. Well EDS1 was not even performed in RBBH analysis so how did you find it?
+
+Could not find PAL (phenylalanine ammonia lyase) in chcikpea annotation so left it out. Only found PAL2 which is not involved in SA biosynthesis.
+
+Found best candidates for different stages of pathway from online resources (references in supplementary) and identified genes in chickpea annotation. From these filtered and included only those that were deferentially regulated (did not have to be significant). Supplementary table 11 has all this info showing the gene markers, the reference source and the expression data for the phytohormone responsive genes. No arabidopsis best blast hit included only looked at chickpea annotation and those that showed expression.
+
+
+I can't find a 13-LOX so left that out.. I don't think its a good idea just to put all LOX in just cz they say LOX cz members do different things..... but can add them later if need be.
+
+Ca_27361
+isochorismate synthase 2
+https://www.frontiersin.org/articles/10.3389/fpls.2020.00338/full
+not expressed
+
+
+
+
+
+
+
+Out of all the 5 PR1s annotated only one was differentially regulated accross timecourse.
+
+I have left all LOX in for now. As all LOX members show role in JA
