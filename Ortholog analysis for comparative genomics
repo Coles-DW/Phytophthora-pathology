@@ -1,3 +1,32 @@
+So you have 2 or more genomes:
+
+1- the defline of each fasta file is important, let say you downloaded them from JGI
+
+the defline looks like this : >jgi|Pisalb1|1010850|CE1010849_8043
+
+in order for FastOrtho to work you need to add the species abbreviation between brackets at the end of the defline : >jgi|Pisalb1|1010850|CE1010849_8043 [Pisalb1]
+
+2- concatenate the 2 files into one : two_hemibiotroph_genomes.fasta
+
+3- run blast
+
+makeblastdb -in two_hemibiotroph_genomes.fasta -dbtype prot -out two_hemibiotroph_genomes
+
+
+blastp -db two_hemibiotroph_genomes -query two_hemibiotroph_genomes.fasta -evalue 1e-5 -num_threads 28 -outfmt "6 std qcovs gaps qlen slen" -out two_hemibiotroph_genomes_vsAll.blastp
+
+4- run fastOrtho
+
+FastOrtho --mixed_genome_fasta  two_hemibiotroph_genomes.fasta --working_directory run12/ --project_name versionpmlm24072021 --blast_file two_hemibiotroph_genomes_vsAll.blastp --pi_cutoff 70  --pmatch_cutoff 70
+
+you can play with identity percentage cutoff using this argument --pi_cutoff and with minimum_percent_matching using --pmatch_cutoff
+
+
+
+Note: lower limit in TF vs TF is 30%, when go lower to say 20% then you get one new orthologous group but otherwise a new member will be added or old one removed. Also a case of replacing a member by another new one. Addition of a new large 22 member group. Therefore gets messy.
+
+ Therefore 30-50% max.
+
 ## Usage inputs:
 --working_directory run1
 --project_name version1
