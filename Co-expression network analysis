@@ -1,0 +1,83 @@
+This code may be used to generate correlation values to be used as input for network analysis along with strategy for network analysis in cytoscape.
+
+cd /data/s01255ss-wsu-w0565/data1/Coles_D/
+
+Chickpea:
+
+DEER=chick_norm_uniq_counts.txt
+DEER=normalized_expressed_myrtle.txt
+ODIR=chick_norm_uniq_counts_results
+ODIR=normalized_expressed_myrtle_results
+
+mkdir $ODIR
+
+mictools null $DEER $ODIR/null_dist.txt  
+
+mictools pval $DEER $ODIR/null_dist.txt $ODIR  
+
+mictools adjust $ODIR/pval.txt $ODIR         
+
+mictools strength $DEER $ODIR/pval_adj.txt $ODIR/strength.txt (Automatically chosen alphas:
+
+* None: 0.850000)
+
+ SecretProt:
+
+BEER=Pm_sp_nuc.txt
+PDIR=phyt_mictools_results
+
+mkdir $PDIR
+
+mictools null $BEER $PDIR/null_dist.txt   (The minimum p-value with a total of 200000 permutations is 5.000000e-06)
+
+mictools pval $BEER $PDIR/null_dist.txt $PDIR  
+
+mictools adjust $PDIR/pval.txt $PDIR          
+
+mictools strength $BEER $PDIR/pval_adj.txt $PDIR/strength.txt (Automatically chosen alphas:
+
+* None: 0.850000)
+
+Phytophthora:
+
+PEER=phytnet_norm_express.txt
+MDIR=Phyt_mictools_allgenes_results
+
+mkdir $MDIR
+
+mictools null $PEER $MDIR/null_dist.txt   
+
+mictools pval $PEER $MDIR/null_dist.txt $MDIR  (The minimum p-value with a total of 200000 permutations is 5.000000e-06) 
+
+mictools adjust $MDIR/pval.txt $MDIR        
+
+mictools strength $PEER $MDIR/pval_adj.txt $MDIR/strength.txt   (1441676.pts-1.wsu-hie-general1)
+
+Combined:
+
+MEER=Combined_SSP_host.txt or Combined_SP_host_nuc.txt
+CDIR=combined_mictools_results_new
+
+mkdir $CDIR
+
+mictools null $MEER $CDIR/null_dist.txt  
+
+mictools pval $MEER $CDIR/null_dist.txt $CDIR  
+
+mictools adjust $CDIR/pval.txt $CDIR      
+
+mictools strength $MEER $CDIR/pval_adj.txt $CDIR/strength.txt (Automatically chosen alphas:
+
+* None: 0.850000) 
+
+
+
+Cytoscsape:
+
+1. Filter in excel: colour code SSP yellow in var 1 and var 2 then filter for colour and take only SSP correlations for network construction (Did not work to merge in r as you get duplicate nodes occuring)
+2. Mapping file: Excel sheet used to input into mictools, all nodes column 1, is a SSP or not column 2 and plant or pathogen gene in column 3. 
+3. Mcode for modules: looks for densely correlated nodes (plant genes) and maybe SSP in that module.
+
+References:
+1. Albanese, D., Riccadonna, S., Donati, C., & Franceschi, P. (2018). A practical tool for maximal information coefficient analysis. GigaScience, 7(4), giy032.
+2. Su, G., Morris, J. H., Demchak, B., & Bader, G. D. (2014). Biological network exploration with Cytoscape 3. Current protocols in bioinformatics, 47(1), 8-13.
