@@ -1,0 +1,17 @@
+## Create a New Environment: Start by creating a new environment with Miniconda.
+conda create -n busco_env python=3.6
+
+## Activate the Environment:
+conda activate busco_env
+
+## Install BUSCO:
+conda install -c bioconda busco
+
+## Install Dependencies:
+conda install -c bioconda -c conda-forge blast hmmer augustus
+
+## Configure the Config File:
+export BUSCO_CONFIG_FILE="/path/to/myconfig.ini"
+
+## Run BUSCO:
+run_BUSCO.py -i input.fasta -o output_dir -l lineage_dataset
